@@ -13,6 +13,11 @@ h1{
     margin: 0;
     margin-bottom: 1.2rem;
     color: #8f00ff;
+    font-style: 5rem;
+}
+
+option{
+    background: #202124;
 }
 
 span{
@@ -28,7 +33,7 @@ span{
     border-radius: .5rem;
     padding: .60rem;
     width: 20rem;
-
+    color: white;
     background: #303134;
 }
 

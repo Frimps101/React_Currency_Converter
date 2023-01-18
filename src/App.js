@@ -4,39 +4,84 @@ import CurrencyRow from './CurrencyRow';
 
 var myHeaders = new Headers();
 myHeaders.append("apikey", "ahpfUB1U5gX3fQm30w6cQQX269cWbLb0");
-const BASE_URL = "https://api.apilayer.com/currency_data/convert?to=GHS&from=USD&amount=10";
-const SYMBOLS_URL = "https://api.apilayer.com/currency_data/list";
+const BASE_URL = "https://api.exchangerate.host/"; 
 
 
-var requestOptions = {
-  method: 'GET',
-  redirect: 'follow',
-  headers: myHeaders
-};
+// var requestOptions = {
+//   method: 'GET',
+//   redirect: 'follow',
+//   headers: myHeaders
+// };
 
 function App() {
   const [currencySymbols, setCurrencySymbols] = useState([])
-  const [fromCurrency, setFromCurrency] = useState()
-  const [toCurrency, setToCurrency] = useState()
+  const [fromCurrency, setFromCurrency] =useState()
+  const [toCurrency, setToCurrency] =useState()
+  const [exchangeRate, setExchangeRate] = useState()
+  const [amt, setAmt] = useState(0)
+  const [amtInFromCurrency, setAmtInFromCurrency] = useState(true)
+
+  let fromAmt, toAmt;
+
+  if(amtInFromCurrency){
+    fromAmt = amt
+    toAmt = amt * exchangeRate
+  }else{
+    toAmt = amt
+    fromAmt = amt/exchangeRate
+  }
 
   useEffect(()=>{
-    fetch(SYMBOLS_URL, requestOptions)
+    fetch(`${BASE_URL}/latest`)
     .then(res => res.json())
-    .then(data=> setCurrencySymbols(Object.keys(data.currencies)))
-
-    // fetch(BASE_URL, requestOptions)
-    // .then(res=> res.json())
-    // .then(data=>{
-    //   const fromData = data.
-    // })
+    .then(data=> {
+      const firstCurrency = Object.keys(data.rates)[0]
+      console.log(data)
+      console.log(firstCurrency)
+      setCurrencySymbols([...Object.keys(data.rates)])
+      setFromCurrency(data.base)
+      setToCurrency(firstCurrency)
+      setExchangeRate(data.rates[firstCurrency])
+    })
 
   }, [])
+
+  useEffect(()=>{
+    if(fromCurrency != null && toCurrency != null){
+      fetch(`${BASE_URL}convert?from=${fromCurrency}&to=${toCurrency}`)
+      .then(res => res.json())
+      .then(data => setExchangeRate(data.rates[toCurrency]))
+    }
+  }, [fromCurrency, toCurrency])
+
+  const handleFromAmountChange = (e)=>{
+    setAmt(e.target.value)
+    setAmtInFromCurrency(true)
+  }
+
+  const handleToAmountChange = (e)=>{
+    setAmt(e.target.value)
+    setAmtInFromCurrency(false)
+  }
+
   return (
     <>
       <h1>Convert<span>R</span></h1>
-      <CurrencyRow currencySymbols={currencySymbols} />
+      <CurrencyRow 
+        currencySymbols={currencySymbols}
+        selectedCurrency={fromCurrency}
+        onChangeCurrency={e=>setAmtInFromCurrency(e.target.value)}
+        amt={fromAmt}
+        onChangeAmt={handleFromAmountChange}
+      />
       <div className="equal">=</div>
-      <CurrencyRow currencySymbols={currencySymbols} />
+      <CurrencyRow 
+        currencySymbols={currencySymbols} 
+        selectedCurrency={toCurrency}
+        onChangeCurrency={e=>setAmtInFromCurrency(e.target.value)}
+        amt={toAmt}
+        onChangeAmt={handleToAmountChange}
+      />
     </>
   );
 }
