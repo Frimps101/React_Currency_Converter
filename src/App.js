@@ -69,16 +69,16 @@ function App() {
       <h1>Convert<span>R</span></h1>
       <CurrencyRow 
         currencySymbols={currencySymbols}
-        selectedCurrency={fromCurrency}
-        onChangeCurrency={e=>setAmtInFromCurrency(e.target.value)}
+        // selectedCurrency={fromCurrency}
+        onChangeCurrency={e=>setFromCurrency(e.target.value)}
         amt={fromAmt}
         onChangeAmt={handleFromAmountChange}
       />
       <div className="equal">=</div>
       <CurrencyRow 
         currencySymbols={currencySymbols} 
-        selectedCurrency={toCurrency}
-        onChangeCurrency={e=>setAmtInFromCurrency(e.target.value)}
+        // selectedCurrency={toCurrency}
+        onChangeCurrency={e=>setToCurrency(e.target.value)}
         amt={toAmt}
         onChangeAmt={handleToAmountChange}
       />
